@@ -14,11 +14,12 @@ namespace variables
 
 	namespace world
 	{
-
+		inline float viewmodelFov = 0.f;
 	}
 
 	namespace screen
 	{
 		inline bool debugInfo = false;
+		inline bool removeScope = false;
 	}
 }

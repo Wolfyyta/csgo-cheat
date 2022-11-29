@@ -8,6 +8,7 @@
 #include "../features/screen.h"
 
 #include "../globals.h"
+#include "../features/variables.h"
 
 LONG  __stdcall hooks::EndScene(IDirect3DDevice9* device) noexcept
 {
@@ -74,6 +75,25 @@ bool __stdcall hooks::CreateMove(float frameTime, CUserCmd* cmd) noexcept
 	return false;
 }
 
+void __stdcall hooks::PaintTraverse(unsigned int panel, bool forceRepaint, bool allowForce)
+{
+	if (strstr("HudZoom", interfaces::panel->GetName(panel)) && variables::screen::removeScope)
+		return;
+
+	PaintTraverseOriginal(interfaces::panel, panel, forceRepaint, allowForce);
+}
+
+float __stdcall hooks::GetViewModelFOV()
+{
+	if (!globals::local)
+		return GetViewModelFOVOriginal(interfaces::clientMode);
+
+	if (globals::local->IsScoped())
+		return GetViewModelFOVOriginal(interfaces::clientMode);
+
+	return GetViewModelFOVOriginal(interfaces::clientMode) + variables::world::viewmodelFov;
+}
+
 void hooks::SetupHooks()
 {
 	MH_Initialize();
@@ -81,6 +101,8 @@ void hooks::SetupHooks()
 		MH_CreateHook(utils::Get(interfaces::device, 42), &EndScene, reinterpret_cast<void**>(&EndSceneOriginal));
 		MH_CreateHook(utils::Get(interfaces::device, 16), &Reset, reinterpret_cast<void**>(&ResetOriginal));
 		MH_CreateHook(utils::Get(interfaces::clientMode, 24), &CreateMove, reinterpret_cast<void**>(&CreateMoveOriginal));
+		MH_CreateHook(utils::Get(interfaces::panel, 41), &PaintTraverse, reinterpret_cast<void**>(&PaintTraverseOriginal));
+		MH_CreateHook(utils::Get(interfaces::clientMode, 35), &GetViewModelFOV, reinterpret_cast<void**>(&GetViewModelFOVOriginal));
 	}
 	MH_EnableHook(MH_ALL_HOOKS);
 }

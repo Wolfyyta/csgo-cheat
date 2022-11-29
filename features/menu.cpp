@@ -35,13 +35,14 @@ void menu::Render() noexcept
 
 	ImGui::Begin("world");
 	{
-
+		ImGui::SliderFloat("viewmodel fov add", &variables::world::viewmodelFov, 0.f, 180.f);
 	}
 	ImGui::End();
 
 	ImGui::Begin("screen");
 	{
 		ImGui::Checkbox("show debug info", &variables::screen::debugInfo);
+		ImGui::Checkbox("remove scope", &variables::screen::removeScope);
 	}
 	ImGui::End();
 }

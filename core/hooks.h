@@ -21,7 +21,15 @@ namespace hooks
 
 	static LRESULT __stdcall WndProcess(HWND, UINT, WPARAM, LPARAM);
 
-	using CreateMoveFn = bool(__thiscall*)(IClientModeShared*, float, CUserCmd*) noexcept;
+	using CreateMoveFn = bool(__thiscall*)(void*, float, CUserCmd*) noexcept;
 	inline CreateMoveFn CreateMoveOriginal = nullptr;
-	bool __stdcall CreateMove(float frameTime, CUserCmd* cmd) noexcept;
+	bool __stdcall CreateMove(float, CUserCmd*) noexcept;
+
+	using PaintTraverseFn = void(__thiscall*)(void*, unsigned int, bool, bool);
+	inline PaintTraverseFn PaintTraverseOriginal = nullptr ;
+	void __stdcall PaintTraverse(unsigned int, bool, bool);
+
+	using GetViewModelFOVFn = float(__thiscall*)(void*);
+	inline GetViewModelFOVFn GetViewModelFOVOriginal = nullptr ;
+	float __stdcall GetViewModelFOV();
 }

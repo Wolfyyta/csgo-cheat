@@ -15,7 +15,7 @@ void screen::DrawOnScreen(ImDrawList* drawList)
 		}
 		else
 		{
-			drawList->AddText(ImVec2(10, 10), ImColor(255, 255, 255, 255), "CLocalPlayer is 0");
+			drawList->AddText(ImVec2(10, 50), ImColor(255, 255, 255, 255), "CLocalPlayer is 0");
 		}
 
 		if (cmd)
