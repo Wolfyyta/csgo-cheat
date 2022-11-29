@@ -148,6 +148,8 @@ void __stdcall hooks::FrameStageNotify(CClientFrameStage stage)
 	{
 	case FRAME_RENDER_START:
 		// todo: remove post processing (avoid convar manipulation)
+		// todo: animation fix
+		// todo: remove flash (maybe find a way to avoid netvar manipulation)
 		break;
 	}
 

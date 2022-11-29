@@ -236,5 +236,8 @@
     <ClInclude Include="sdk\chud.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="sdk\iprediction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

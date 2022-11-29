@@ -186,6 +186,7 @@
     <ClInclude Include="sdk\iglobalvars.h" />
     <ClInclude Include="sdk\iglowmanager.h" />
     <ClInclude Include="sdk\imaterialsystem.h" />
+    <ClInclude Include="sdk\iprediction.h" />
     <ClInclude Include="sdk\ispatialquery.h" />
     <ClInclude Include="sdk\istudiorender.h" />
     <ClInclude Include="sdk\isurface.h" />

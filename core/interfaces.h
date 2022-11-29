@@ -20,6 +20,7 @@
 #include "../sdk/cclientframestagenotify.h"
 #include "../sdk/cviewsetup.h"
 #include "../sdk/chud.h"
+#include "../sdk/iprediction.h"
 
 namespace interfaces
 {
@@ -43,4 +44,5 @@ namespace interfaces
 	inline void* keyValuesSystem = nullptr;
 	inline CHud* hud = nullptr;
 	inline CHudChat* hudChat = nullptr;
+	inline IPrediction* prediction = nullptr;
 }
