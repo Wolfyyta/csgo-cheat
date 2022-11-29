@@ -64,7 +64,6 @@ bool __stdcall hooks::CreateMove(float frameTime, CUserCmd* cmd) noexcept
 	if (!cmd || !cmd->commandNumber)
 		return result;
 
-	globals::local = interfaces::entityList->GetEntityFromIndex(interfaces::engine->GetLocalPlayerIndex());
 	globals::cmd = cmd;
 
 	if (globals::local && globals::local->IsAlive())
@@ -81,6 +80,11 @@ void __stdcall hooks::PaintTraverse(unsigned int panel, bool forceRepaint, bool 
 		return;
 
 	PaintTraverseOriginal(interfaces::panel, panel, forceRepaint, allowForce);
+
+	if (strstr("FocusOverlayPanel", interfaces::panel->GetName(panel)))
+	{
+		interfaces::panel->SetMouseInputEnable(panel, menu::IsOpen());
+	}
 }
 
 float __stdcall hooks::GetViewModelFOV()
@@ -94,6 +98,62 @@ float __stdcall hooks::GetViewModelFOV()
 	return GetViewModelFOVOriginal(interfaces::clientMode) + variables::world::viewmodelFov;
 }
 
+void __stdcall hooks::OverrideView(CViewSetup* setup)
+{
+	if (!globals::local)
+		return OverrideViewOriginal(interfaces::clientMode, setup);
+
+	if (globals::local->IsScoped() && !variables::world::keepFovInScope)
+		return OverrideViewOriginal(interfaces::clientMode, setup);
+
+	if (variables::world::keepFovInScope && globals::local->IsScoped())
+	{
+		setup->fov = setup->fov + variables::world::worldFov + 10.f; // todo: find proper and working method xd
+	}
+	else
+	{
+		setup->fov = setup->fov + variables::world::worldFov;
+	}
+
+	OverrideViewOriginal(interfaces::clientMode, setup);
+}
+
+/* credits: cazz/kakhack */
+bool __stdcall hooks::DispatchUserMessage(int type, uint32_t flags, int size, const void* message)
+{
+	switch (type)
+	{
+	case CS_UM_VoteStart:
+	{
+		interfaces::hudChat->ChatPrintf(0, 0, " \x03[csgo]\x01 Vote started\n");
+		break;
+	}
+	case CS_UM_VotePass:
+		interfaces::hudChat->ChatPrintf(0, 0, " \x03[csgo]\x01 Vote \x04Passed\x01\n");
+		break;
+
+	case CS_UM_VoteFailed:
+		interfaces::hudChat->ChatPrintf(0, 0, " \x03[csgo]\x01 \x02Vote\x02 Failed\x01\n");
+		break;
+	}
+
+	return DispatchUserMessageOriginal(interfaces::client, type, flags, size, message);
+}
+
+void __stdcall hooks::FrameStageNotify(CClientFrameStage stage)
+{
+	globals::local = interfaces::entityList->GetEntityFromIndex(interfaces::engine->GetLocalPlayerIndex());
+
+	switch (stage)
+	{
+	case FRAME_RENDER_START:
+		// todo: remove post processing (avoid convar manipulation)
+		break;
+	}
+
+	FrameStageNotifyOriginal(interfaces::client, stage);
+}
+
 void hooks::SetupHooks()
 {
 	MH_Initialize();
@@ -103,6 +163,9 @@ void hooks::SetupHooks()
 		MH_CreateHook(utils::Get(interfaces::clientMode, 24), &CreateMove, reinterpret_cast<void**>(&CreateMoveOriginal));
 		MH_CreateHook(utils::Get(interfaces::panel, 41), &PaintTraverse, reinterpret_cast<void**>(&PaintTraverseOriginal));
 		MH_CreateHook(utils::Get(interfaces::clientMode, 35), &GetViewModelFOV, reinterpret_cast<void**>(&GetViewModelFOVOriginal));
+		MH_CreateHook(utils::Get(interfaces::clientMode, 18), &OverrideView, reinterpret_cast<void**>(&OverrideViewOriginal));
+		MH_CreateHook(utils::Get(interfaces::client, 38), &DispatchUserMessage, reinterpret_cast<void**>(&DispatchUserMessageOriginal));
+		MH_CreateHook(utils::Get(interfaces::client, 37), &FrameStageNotify, reinterpret_cast<void**>(&FrameStageNotifyOriginal));
 	}
 	MH_EnableHook(MH_ALL_HOOKS);
 }

@@ -35,6 +35,8 @@ void interfaces::SetupInterfaces()
 	modelInfo = Get<IVModelInfo>("engine.dll", "VModelInfoClient004");
 	panel = Get<IVPanel>("vgui2.dll", "VGUI_Panel009");
 	device = **reinterpret_cast<IDirect3DDevice9***>(utils::PatternScan("shaderapidx9.dll", "A1 ? ? ? ? 50 8B 08 FF 51 0C") + 0x1);
+	hud = *reinterpret_cast<CHud**>(utils::PatternScan("client.dll", "B9 ? ? ? ? E8 ? ? ? ? 85 C0 0F 84 ? ? ? ? 83 C0 EC 0F 84 ? ? ? ?") + 1);
+	hudChat = hud->FindElement<CHudChat>("CHudChat");
 
 	if (const HINSTANCE handle = GetModuleHandle("vstdlib.dll"); handle)
 		keyValuesSystem = reinterpret_cast<void* (__cdecl*)()>(GetProcAddress(handle, "KeyValuesSystem"))();

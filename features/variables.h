@@ -15,6 +15,8 @@ namespace variables
 	namespace world
 	{
 		inline float viewmodelFov = 0.f;
+		inline float worldFov = 0.f;
+		inline bool keepFovInScope = false;
 	}
 
 	namespace screen

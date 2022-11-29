@@ -26,10 +26,22 @@ namespace hooks
 	bool __stdcall CreateMove(float, CUserCmd*) noexcept;
 
 	using PaintTraverseFn = void(__thiscall*)(void*, unsigned int, bool, bool);
-	inline PaintTraverseFn PaintTraverseOriginal = nullptr ;
+	inline PaintTraverseFn PaintTraverseOriginal = nullptr;
 	void __stdcall PaintTraverse(unsigned int, bool, bool);
 
 	using GetViewModelFOVFn = float(__thiscall*)(void*);
-	inline GetViewModelFOVFn GetViewModelFOVOriginal = nullptr ;
+	inline GetViewModelFOVFn GetViewModelFOVOriginal = nullptr;
 	float __stdcall GetViewModelFOV();
+
+	using OverrideViewFn = void(__thiscall*)(void*, CViewSetup*);
+	inline OverrideViewFn OverrideViewOriginal = nullptr;
+	void __stdcall OverrideView(CViewSetup*);
+
+	using DispatchUserMessageFn = int(__thiscall*)(void*, int, uint32_t, int, const void*);
+	inline DispatchUserMessageFn DispatchUserMessageOriginal = nullptr;
+	bool __stdcall DispatchUserMessage(int, uint32_t, int, const void*);
+
+	using FrameStageNotifyFn = void(__thiscall*)(void*, CClientFrameStage);
+	inline FrameStageNotifyFn FrameStageNotifyOriginal = nullptr;
+	void __stdcall FrameStageNotify(CClientFrameStage);
 }

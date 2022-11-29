@@ -17,6 +17,9 @@
 #include "../sdk/ivengineclient.h"
 #include "../sdk/ivmodelinfo.h"
 #include "../sdk/ivpanel.h"
+#include "../sdk/cclientframestagenotify.h"
+#include "../sdk/cviewsetup.h"
+#include "../sdk/chud.h"
 
 namespace interfaces
 {
@@ -38,4 +41,6 @@ namespace interfaces
 	inline IVModelInfo* modelInfo = nullptr;
 	inline IVPanel* panel = nullptr;
 	inline void* keyValuesSystem = nullptr;
+	inline CHud* hud = nullptr;
+	inline CHudChat* hudChat = nullptr;
 }

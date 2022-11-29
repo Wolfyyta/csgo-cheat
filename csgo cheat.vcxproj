@@ -167,14 +167,17 @@
     <ClInclude Include="features\screen.h" />
     <ClInclude Include="features\variables.h" />
     <ClInclude Include="sdk\cclientclass.h" />
+    <ClInclude Include="sdk\cclientframestagenotify.h" />
     <ClInclude Include="sdk\ccolor.h" />
     <ClInclude Include="sdk\centity.h" />
+    <ClInclude Include="sdk\chud.h" />
     <ClInclude Include="sdk\ckeyvalues.h" />
     <ClInclude Include="sdk\cmatrix.h" />
     <ClInclude Include="sdk\crecvtable.h" />
     <ClInclude Include="sdk\cusercmd.h" />
     <ClInclude Include="sdk\cutlvector.h" />
     <ClInclude Include="sdk\cvector.h" />
+    <ClInclude Include="sdk\cviewsetup.h" />
     <ClInclude Include="sdk\ibaseclientdll.h" />
     <ClInclude Include="sdk\icliententitylist.h" />
     <ClInclude Include="sdk\iclientmodeshared.h" />
