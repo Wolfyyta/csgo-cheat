@@ -9,7 +9,7 @@ namespace variables
 
 	namespace players
 	{
-		
+		inline bool boxEsp = false;
 	}
 
 	namespace world

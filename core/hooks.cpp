@@ -115,6 +115,15 @@ void __stdcall hooks::OverrideView(CViewSetup* setup)
 		setup->fov = setup->fov + variables::world::worldFov;
 	}
 
+	static bool thirdperson = false;
+	if (GetAsyncKeyState(VK_ADD) & 1)
+		thirdperson = !thirdperson;
+
+	if (thirdperson)
+	{
+		
+	}
+
 	OverrideViewOriginal(interfaces::clientMode, setup);
 }
 
@@ -149,6 +158,7 @@ void __stdcall hooks::FrameStageNotify(CClientFrameStage stage)
 	case FRAME_RENDER_START:
 		// todo: remove post processing (avoid convar manipulation)
 		// todo: animation fix
+		// todo: skin changer
 		// todo: remove flash (maybe find a way to avoid netvar manipulation)
 		break;
 	}
@@ -156,10 +166,73 @@ void __stdcall hooks::FrameStageNotify(CClientFrameStage stage)
 	FrameStageNotifyOriginal(interfaces::client, stage);
 }
 
+void __fastcall hooks::SettingsChatText(void* thisptr, void* edx, const char* text)
+{
+	if (strstr("#SFUI_Settings_Chat_Say", text))
+	{
+		return SettingsChatTextOriginal(thisptr, "[csgo] Global chat.");
+	}
+
+	if (strstr("#SFUI_Settings_Chat_SayTeam", text))
+	{
+		return SettingsChatTextOriginal(thisptr, "[csgo] Team chat.");
+	}
+
+	SettingsChatTextOriginal(thisptr, text);
+}
+
+int __fastcall hooks::GetPlayerMoney(void* thisptr, void* edx, int entityIndex)
+{
+	const auto player = interfaces::entityList->GetEntityFromIndex(entityIndex);
+
+	if (!player || !player->IsPlayer())
+		return GetPlayerMoneyOriginal(thisptr, entityIndex);
+
+	if (player->GetTeam() == globals::local->GetTeam())
+		return GetPlayerMoneyOriginal(thisptr, entityIndex);
+
+	return player->Account();
+}
+
+int __stdcall hooks::ListLeavesInBox(const CVector& mins, const CVector& maxs, unsigned short* list, int listMax)
+{
+	static const auto insertIntoTree = reinterpret_cast<std::uintptr_t>(utils::PatternScan("client.dll", "56 52 FF 50 18") + 5);
+
+	if (reinterpret_cast<std::uintptr_t>(_ReturnAddress()) != insertIntoTree)
+		return ListLeavesInBoxOriginal(interfaces::engine->GetBSPTreeQuery(), mins, maxs, list, listMax);
+
+	const auto info = *reinterpret_cast<CRenderableInfo**>(reinterpret_cast<std::uintptr_t>(_AddressOfReturnAddress()) + 0x14);
+
+	if (!info || !info->renderable)
+		return ListLeavesInBoxOriginal(interfaces::engine->GetBSPTreeQuery(), mins, maxs, list, listMax);
+
+	const auto entity = info->renderable->GetIClientUnknown()->GetBaseEntity();
+
+	if (!entity || !entity->IsPlayer())
+		return ListLeavesInBoxOriginal(interfaces::engine->GetBSPTreeQuery(), mins, maxs, list, listMax);
+
+	if (entity->GetTeam() == globals::local->GetTeam())
+		return ListLeavesInBoxOriginal(interfaces::engine->GetBSPTreeQuery(), mins, maxs, list, listMax);
+
+	info->flags &= ~RENDER_FLAGS_FORCE_OPAQUE_PASS;
+	info->flags2 |= RENDER_FLAGS_BOUNDS_ALWAYS_RECOMPUTE;
+
+	constexpr float maxCoord = 16384.0f;
+	constexpr float minCoord = -maxCoord;
+
+	constexpr CVector min{ minCoord, minCoord, minCoord };
+	constexpr CVector max{ maxCoord, maxCoord, maxCoord };
+
+	return ListLeavesInBoxOriginal(interfaces::engine->GetBSPTreeQuery(), min, max, list, listMax);
+}
+
 void hooks::SetupHooks()
 {
 	MH_Initialize();
 	{
+		static auto settingsChatTextSig = utils::PatternScan("client.dll", "55 8B EC 56 8B F1 83 BE ? ? ? ? ? 75 4B");
+		static auto getPlayerMoneySig = utils::PatternScan("client.dll", "55 8B EC 56 8B 75 08 83 FE 3F 0F 87 ? ? ? ?");
+
 		MH_CreateHook(utils::Get(interfaces::device, 42), &EndScene, reinterpret_cast<void**>(&EndSceneOriginal));
 		MH_CreateHook(utils::Get(interfaces::device, 16), &Reset, reinterpret_cast<void**>(&ResetOriginal));
 		MH_CreateHook(utils::Get(interfaces::clientMode, 24), &CreateMove, reinterpret_cast<void**>(&CreateMoveOriginal));
@@ -168,6 +241,11 @@ void hooks::SetupHooks()
 		MH_CreateHook(utils::Get(interfaces::clientMode, 18), &OverrideView, reinterpret_cast<void**>(&OverrideViewOriginal));
 		MH_CreateHook(utils::Get(interfaces::client, 38), &DispatchUserMessage, reinterpret_cast<void**>(&DispatchUserMessageOriginal));
 		MH_CreateHook(utils::Get(interfaces::client, 37), &FrameStageNotify, reinterpret_cast<void**>(&FrameStageNotifyOriginal));
+
+		MH_CreateHook(utils::Get(interfaces::engine->GetBSPTreeQuery(), 6), &ListLeavesInBox, reinterpret_cast<void**>(&ListLeavesInBoxOriginal));
+
+		MH_CreateHook(reinterpret_cast<void*>(settingsChatTextSig), &SettingsChatText, reinterpret_cast<void**>(&SettingsChatTextOriginal));
+		MH_CreateHook(reinterpret_cast<void*>(getPlayerMoneySig), &GetPlayerMoney, reinterpret_cast<void**>(&GetPlayerMoneyOriginal));
 	}
 	MH_EnableHook(MH_ALL_HOOKS);
 }

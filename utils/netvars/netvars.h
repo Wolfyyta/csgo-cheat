@@ -18,5 +18,5 @@ namespace netvars
 inline std::add_lvalue_reference_t<__VA_ARGS__> name() noexcept \
 { \
 	static const std::uint32_t offset = netvars::data[hash::CompileTime(var)]; \
-	return *reinterpret_cast<std::add_pointer_t<__VA_ARGS__>>(std::uint32_t(this) + offset); \
+	return *reinterpret_cast<std::add_pointer_t<__VA_ARGS__>>(std::uintptr_t(this) + offset); \
 }

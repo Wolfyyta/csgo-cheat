@@ -4,6 +4,8 @@
 /* macro for easier use */
 #define REL_TO_ABS utils::RelToAbs
 
+class CEntity;
+class CVector;
 namespace utils
 {
 	/* call a virtual function located in a class */
@@ -30,4 +32,10 @@ namespace utils
 	/* simple pattern scanner */
 	/* credits: cazz/based */
 	std::uint8_t* PatternScan(const char* moduleName, const char* pattern) noexcept;
+
+	/* simple world to screan function */
+	bool WorldToScreen(const CVector& world, CVector& screen);
+
+	/* get the bounding box of an entity */
+	bool GetBBox(CEntity* ent, CVector& min, CVector& max);
 }

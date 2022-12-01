@@ -231,6 +231,14 @@ public:
 	NETVAR(HasGunGameImmunity, "CCSPlayer->m_bGunGameImmunity", bool);
 	NETVAR(GetClip, "CBaseCombatWeapon->m_iClip1", int);
 	NETVAR(GetItemDefinitionIndex, "CBaseAttributableItem->m_iItemDefinitionIndex", short);
+	NETVAR(Account, "CCSPlayer->m_iAccount", int);
+	//NETVAR(GetPoseParameter, "CBaseAnimating->m_flPoseParameter", std::array<float, 24>&);
+
+	inline std::array<float, 24>& GetPoseParams() noexcept
+	{
+		static const std::uint32_t offset = netvars::data[hash::CompileTime("CBaseAnimating->m_flPoseParameter")];
+		return *reinterpret_cast<std::add_pointer_t<std::array<float, 24>&>>(std::uintptr_t(this) + offset);
+	}
 
 	constexpr void UpdateClientSideAnimations() noexcept
 	{

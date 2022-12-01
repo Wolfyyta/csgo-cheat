@@ -29,7 +29,7 @@ void menu::Render() noexcept
 
 	ImGui::Begin("players");
 	{
-
+		ImGui::Checkbox("esp box", &variables::players::boxEsp);
 	}
 	ImGui::End();
 

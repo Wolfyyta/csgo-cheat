@@ -44,4 +44,16 @@ namespace hooks
 	using FrameStageNotifyFn = void(__thiscall*)(void*, CClientFrameStage);
 	inline FrameStageNotifyFn FrameStageNotifyOriginal = nullptr;
 	void __stdcall FrameStageNotify(CClientFrameStage);
+
+	using SettingsChatTextFn = void(__thiscall*)(void*, const char*);
+	inline SettingsChatTextFn SettingsChatTextOriginal = nullptr;
+	void __fastcall SettingsChatText(void*, void*, const char*);
+
+	using GetPlayerMoneyFn = int(__thiscall*)(void*, int);
+	inline GetPlayerMoneyFn GetPlayerMoneyOriginal = nullptr;
+	int __fastcall GetPlayerMoney(void*, void*, int);
+
+	using ListLeavesInBoxFn = int(__thiscall*)(void*, const CVector&, const CVector&, unsigned short*, int);
+	inline ListLeavesInBoxFn ListLeavesInBoxOriginal = { nullptr };
+	int __stdcall ListLeavesInBox(const CVector&, const CVector&, unsigned short*, int);
 }
